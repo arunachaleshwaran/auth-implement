@@ -7,8 +7,7 @@ import jwt from 'jsonwebtoken';
 // eslint-disable-next-line new-cap
 const route = Router();
 /**
- * Fetch order id from mongodb and fetch its details from RTA server.
- * and cache the value for future use.
+ * Auth the user
  */
 route.post<
   '/auth',
@@ -69,4 +68,35 @@ route.post<
     await client.close();
   }
 });
+
+route.get<
+  '/time',
+  Record<string, never>,
+  { time: string },
+  never,
+  Record<string, never>
+>(
+  '/time',
+  /** Auth middleware */
+  (req, _, next) => {
+    try {
+      const token = req.headers.authorization!;
+      jwt.verify(token, process.env.JwtSecret);
+    } catch (error) {
+      next(
+        new ExpressError(
+          (error as Error).message,
+          HttpStatusCode.Unauthorized
+        )
+      );
+    }
+  },
+  (_, res, next) => {
+    try {
+      res.json({ time: Date().toString() });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 export default route;
