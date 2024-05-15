@@ -30,14 +30,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(route);
 
 app.use(((err, _req, res, _) => {
-  console.error(err);
   if (err instanceof ExpressError)
     res.status(err.status).send(err.message);
-  else
+  else {
+    console.error(err);
     res
       .status(HttpStatusCode.InternalServerError)
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/no-unsafe-member-access
       .send(err?.message || 'Something went wrong');
+  }
 }) as ErrorRequestHandler);
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

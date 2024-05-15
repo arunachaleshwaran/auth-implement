@@ -1,11 +1,18 @@
 import { collection, connect } from './mongo.js';
 import ExpressError from '../express-error.js';
 import HttpStatusCode from '../HttpStatusCode.js';
+import type { JwtPayload } from 'jsonwebtoken';
 import type { MongoClient } from 'mongodb';
 import { Router } from 'express';
+import type { Schema } from '@auth-implement/shared';
 import jwt from 'jsonwebtoken';
 // eslint-disable-next-line new-cap
 const route = Router();
+
+const AccessTokenCache: Record<
+  Schema['user']['userId'],
+  Array<string>
+> = {};
 /**
  * Auth the user
  */
@@ -26,8 +33,9 @@ route.post<
   }
   try {
     const userCollection = collection(client, 'user');
+    const { userId, password, redirectUrl } = req.body;
     const user = await userCollection.findOne({
-      userId: req.body.userId,
+      userId,
     });
     if (user === null)
       throw new ExpressError(
@@ -39,14 +47,14 @@ route.post<
         'User blocked',
         HttpStatusCode.Forbidden
       );
-    if (user.password === req.body.password)
+    if (user.password === password)
       await userCollection.updateOne(
-        { userId: req.body.userId },
+        { userId },
         { $set: { retry: 0 } }
       );
     else {
       await userCollection.updateOne(
-        { userId: req.body.userId },
+        { userId },
         { $inc: { retry: 1 } }
       );
       throw new ExpressError(
@@ -54,13 +62,16 @@ route.post<
         HttpStatusCode.Unauthorized
       );
     }
-    const token = jwt.sign(
+    const token: string = jwt.sign(
       { userId: req.body.userId },
       process.env.JwtSecret,
       { expiresIn: process.env.JwtExpireTime }
     );
+    AccessTokenCache[userId] = (AccessTokenCache[userId] ??
+      []) as Array<string>;
+    AccessTokenCache[userId].push(token);
     res.send({
-      callBack: `/auth?token=${token}&redirectUrl=${req.body.redirectUrl}`,
+      callBack: `/auth?token=${token}&redirectUrl=${redirectUrl}`,
     });
   } catch (error) {
     next(error);
@@ -81,7 +92,12 @@ route.get<
   (req, _, next) => {
     try {
       const token = req.headers.authorization!;
-      jwt.verify(token, process.env.JwtSecret);
+      const { userId } = jwt.verify(
+        token,
+        process.env.JwtSecret
+      ) as JwtPayload & { userId: Schema['user']['userId'] };
+      if (!AccessTokenCache[userId].find(t => t === token))
+        throw new Error('Session kicked out. Please login again');
     } catch (error) {
       next(
         new ExpressError(
@@ -99,4 +115,21 @@ route.get<
     }
   }
 );
+route.get<
+  '/kick-out',
+  Record<string, never>,
+  string,
+  never,
+  { userId: Schema['user']['userId'] }
+>(
+  '/kick-out',
+  /** Auth middleware */
+  (req, res, next) => {
+    console.log('first', req.query.userId);
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete AccessTokenCache[req.query.userId];
+    res.status(HttpStatusCode.Ok).send('Done');
+  }
+);
+
 export default route;
