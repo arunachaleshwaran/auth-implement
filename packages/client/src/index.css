@@ -3,7 +3,9 @@
   padding: unset;
   margin: unset;
 }
-
+html{
+  font-size: 100%;
+}
 body {
   --success: #affac6;
   --failed: #f4afaf;
