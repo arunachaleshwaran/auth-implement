@@ -3,6 +3,7 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from 'react-router-dom';
+import { Auth } from './routes/Auth';
 import { AuthContextProvider } from './Store';
 import AuthRoute from './components/AuthRoute';
 import { Home } from './routes/Home';
@@ -21,8 +22,12 @@ const router = createBrowserRouter([
   },
 
   {
-    path: '/Login',
+    path: '/login',
     element: <Login />,
+  },
+  {
+    path: '/auth',
+    element: <Auth />,
   },
 ]);
 ReactDOM.createRoot(root).render(

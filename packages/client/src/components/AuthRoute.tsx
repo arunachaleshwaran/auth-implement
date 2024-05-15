@@ -1,6 +1,6 @@
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../Store';
-import { useNavigate } from 'react-router-dom';
 
 export default function AuthRoute({
   component: Component,
@@ -12,7 +12,15 @@ export default function AuthRoute({
 
   useEffect(() => {
     if (auth.sessionToken === null) {
-      navigate('/login', { state: 'all' });
+      navigate(
+        {
+          pathname: '/login',
+          search: createSearchParams({
+            redirectUrl: `${location.pathname}${location.search}`,
+          }).toString(),
+        },
+        { replace: true }
+      );
     }
   });
   // eslint-disable-next-line react/jsx-no-useless-fragment

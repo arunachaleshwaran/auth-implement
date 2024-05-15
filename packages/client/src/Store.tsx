@@ -16,7 +16,7 @@ export function AuthContextProvider({
   readonly children: React.ReactNode;
 }) {
   const [sessionToken, setSessionToken] = useState<string | null>(
-    null
+    sessionStorage.getItem('token') ?? null
   );
   return (
     <AuthContext.Provider
@@ -24,6 +24,8 @@ export function AuthContextProvider({
       value={{
         sessionToken,
         updateSession: (token: string | null) => {
+          if (token === null) sessionStorage.removeItem('token');
+          else sessionStorage.setItem('token', token);
           setSessionToken(token);
         },
       }}>

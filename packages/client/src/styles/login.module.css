@@ -1,0 +1,19 @@
+.form{
+    font-size: 1.7rem;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: max(22ch, 40%);
+    gap: .5em;
+    height: 100vh;
+    justify-content: center;
+    & > * {
+        padding: .5em;
+        border-radius: .5em;
+    }
+    button{
+        background-color: var(--primary);
+        color: var(--primary-text-inv);
+        cursor: pointer;
+    }
+}

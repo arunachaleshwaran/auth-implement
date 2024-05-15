@@ -13,11 +13,13 @@ route.post<
   '/auth',
   Record<string, never>,
   { callBack: string },
-  never,
+  { userId: string; password: string; redirectUrl: string },
   Record<string, never>
->('/auth', (_, res, next) => {
+>('/auth', (req, res, next) => {
   try {
-    res.send({ callBack: 'Authenticated' });
+    res.send({
+      callBack: `/auth?token=token&redirectUrl=${req.body.redirectUrl}`,
+    });
   } catch (error) {
     next(error);
   }
