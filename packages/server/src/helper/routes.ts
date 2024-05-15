@@ -3,7 +3,7 @@ import ExpressError from '../express-error.js';
 import HttpStatusCode from '../HttpStatusCode.js';
 import type { MongoClient } from 'mongodb';
 import { Router } from 'express';
-
+import jwt from 'jsonwebtoken';
 // eslint-disable-next-line new-cap
 const route = Router();
 /**
@@ -35,7 +35,7 @@ route.post<
         'User not found',
         HttpStatusCode.Unauthorized
       );
-    if (user.retry >= 3)
+    if (user.retry >= Number(process.env.MaxRetry))
       throw new ExpressError(
         'User blocked',
         HttpStatusCode.Forbidden
@@ -55,8 +55,13 @@ route.post<
         HttpStatusCode.Unauthorized
       );
     }
+    const token = jwt.sign(
+      { userId: req.body.userId },
+      process.env.JwtSecret,
+      { expiresIn: process.env.JwtExpireTime }
+    );
     res.send({
-      callBack: `/auth?token=token&redirectUrl=${req.body.redirectUrl}`,
+      callBack: `/auth?token=${token}&redirectUrl=${req.body.redirectUrl}`,
     });
   } catch (error) {
     next(error);
