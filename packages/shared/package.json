@@ -1,0 +1,25 @@
+{
+  "name": "@auth-implement/shared",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {},
+  "exports": {
+    ".": {
+      "type": "./dist/model.d.ts",
+      "default": "./dist/model.js"
+    },
+    "./strategies": {
+      "type": "./dist/strategies.d.ts",
+      "default": "./dist/strategies.js"
+    }
+  }
+}

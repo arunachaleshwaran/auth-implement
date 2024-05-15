@@ -1,0 +1,33 @@
+:where(*, *:before, *:after) {
+  box-sizing: border-box;
+  padding: unset;
+  margin: unset;
+}
+
+body {
+  --success: #affac6;
+  --failed: #f4afaf;
+  --primary: #9c6efd;
+  --secondary: #f2f6bc;
+  --tertiary: #bde2fd;
+  --primary-text: #000;
+  --secondary-text: #222;
+  --primary-text-inv: #fff;
+  --bg: #fff;
+  font-family: sans-serif;
+}
+
+input,
+button {
+  border: none;
+}
+input[type='text']:focus-visible {
+  outline: unset;
+  border: none;
+  &:invalid {
+    box-shadow: 0 0 0.3em red;
+  }
+  &:valid {
+    box-shadow: 0 0 0.3em green;
+  }
+}

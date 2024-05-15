@@ -1,0 +1,49 @@
+{
+  "name": "auth-implement",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:shared": "npm run build -w @auth-implement/shared",
+    "dev:client": "npm run dev -w @auth-implement/client",
+    "dev:server": "npm run dev -w @auth-implement/server",
+    "prepare": "husky"
+  },
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "*": [
+      "prettier --write"
+    ],
+    "src/**/*.{cjs,tsx,md,json}": [
+      "eslint",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
+  },
+  "engines": {
+    "node": "^21",
+    "npm:": "^10"
+  },
+  "exports": {
+    ".": "./model.ts",
+    "./strategies": "./strategies.ts"
+  }
+}

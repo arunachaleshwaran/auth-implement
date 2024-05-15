@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "antfu.vite",
+    "yzhang.markdown-all-in-one",
+    "dsznajder.es7-react-js-snippets",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "unwantedRecommendations": ["mblode.pretty-formatter"]
+}
