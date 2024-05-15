@@ -1,1 +1,7 @@
-export type Schema = Record<string, never>;
+export type Schema = {
+  user: {
+    userId: string;
+    password: string;
+    retry: number;
+  };
+};

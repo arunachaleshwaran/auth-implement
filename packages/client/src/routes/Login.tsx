@@ -1,15 +1,16 @@
-import type { FormEvent, FormEventHandler } from 'react';
+import { type FormEvent, type FormEventHandler, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import style from '../styles/login.module.css';
 export function Login() {
-  const navigate = useNavigate(),
+  const dialogRef = useRef<HTMLDialogElement>(null),
+    navigate = useNavigate(),
     [search] = useSearchParams();
   const login: FormEventHandler<HTMLFormElement> = async (
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
-    const redirectUrl = search.get('redirectUrl') ?? '/';
+    const formData = new FormData(event.target as HTMLFormElement),
+      redirectUrl = search.get('redirectUrl') ?? '/';
     const res = await fetch('http://localhost:4000/auth', {
       method: 'POST',
       headers: {
@@ -22,7 +23,11 @@ export function Login() {
       }),
     });
     if (!res.ok) {
-      throw new Error('Login failed');
+      const message = await res.text();
+      if (dialogRef.current) {
+        dialogRef.current.textContent = message;
+        dialogRef.current.showModal();
+      } else throw new Error(message);
     }
     const { callBack } = (await res.json()) as { callBack: string };
     navigate(callBack, { replace: true });
@@ -44,6 +49,7 @@ export function Login() {
         required
       />
       <button type='submit'>Login</button>
+      <dialog ref={dialogRef}>This is an open dialog window</dialog>
     </form>
   );
 }
